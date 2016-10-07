@@ -26,6 +26,7 @@
 /*-----( Declare Constants and Pin Numbers )-----*/
 #define  CE_PIN  7   // The pins to be used for CE and SN
 #define  CSN_PIN 8
+#define  FEEDBACK 6
 
 #define JOYSTICK_X   A0  // The Joystick potentiometers connected to Arduino Analog inputs
 #define JOYSTICK_Y   A1
@@ -71,6 +72,8 @@ void setup()   /****** SETUP: RUNS ONCE ******/
   pinMode(JOYSTICK_SW, INPUT_PULLUP);  // Pin A2 will be used as a digital input
   pinMode(ERRORPIN, OUTPUT);  
   pinMode(STATUSPIN, OUTPUT); 
+  pinMode(FEEDBACK, OUTPUT);
+  digitalWrite(FEEDBACK, LOW);
   radio.begin();          // Initialize the nRF24L01 Radio
   radio.setChannel(108);  // Above most WiFi frequencies
   radio.setDataRate(RF24_250KBPS); // Fast enough.. Better range
@@ -123,6 +126,9 @@ void loop()   /****** LOOP: RUNS CONSTANTLY ******/
   Serial.print(myData.switchOn);
   if (!radio.write( &myData, sizeof(myData) )) {            // Send data, checking for error ("!" means NOT)
     Serial.println(F("Transmit failed "));
+    digitalWrite(FEEDBACK, LOW);
+  } else {
+  digitalWrite(FEEDBACK, HIGH);
   }
 
   radio.startListening();                                    // Now, continue listening
